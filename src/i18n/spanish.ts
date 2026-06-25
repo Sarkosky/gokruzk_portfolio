@@ -85,9 +85,9 @@ export const spn: LanguageTranslations = {
       codeLink: 'https://github.com/Gokruzk/photo_manager'
     },
     {
-      category: 'Desarrollo Full-Stack',
-      title: 'Plataforma Colaborativa de Encuestas',
-      description: 'Desarrollé una plataforma de encuestas colaborativas utilizando Django Rest Framework y PostgreSQL. Utilicé Django Channels para implementar WebSockets para actualizaciones de encuestas en vivo. Mi trabajo incluyó la gestión y creación de migraciones semilla para asegurar entornos de desarrollo y producción consistentes.',
+      category: 'Ingeniería Full-Stack (NDA)',
+      title: 'Plataforma de Encuestas en Tiempo Real',
+      description: 'Diseño y desarrollo de una plataforma corporativa de encuestas colaborativas bajo acuerdo de confidencialidad. Implementé un backend de alta disponibilidad con Django Rest Framework y MySQL, utilizando Django Channels y WebSockets para la actualización e integración de datos en vivo con un frontend reactivo en Next.js. Diseñé también la estrategia de migraciones y semillas de datos, optimizando el tiempo de aprovisionamiento de entornos locales y staging.',
       tags: ['Python', 'TypeScript', 'Django', 'Next.js', 'MySQL', 'WebSockets', 'JWT'],
       image: '/survey_platform.png'
     },

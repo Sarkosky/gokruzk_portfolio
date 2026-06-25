@@ -85,9 +85,9 @@ export const eng: LanguageTranslations = {
       codeLink: 'https://github.com/Gokruzk/photo_manager'
     },
     {
-      category: 'Full-Stack Development',
-      title: 'Collaborative Survey Platform',
-      description: 'Developed a collaborative survey platform using Django Rest Framework and PostgreSQL. I utilized Django Channels to implement WebSockets for live survey updates. My work included managing and creating seed migrations to ensure consistent development and production environments.',
+      category: 'Full-Stack Engineering (NDA)',
+      title: 'Real-Time Survey Platform',
+      description: 'Designed and developed a corporate collaborative survey platform under a non-disclosure agreement. Built a high-availability backend using Django Rest Framework and MySQL, integrating Django Channels and WebSockets to stream live survey updates to a reactive Next.js frontend. Established robust seed migrations and data workflows, streamlining environment provisioning for dev and staging teams.',
       tags: ['Python', 'TypeScript', 'Django', 'Next.js', 'MySQL', 'WebSockets', 'JWT'],
       image: '/survey_platform.png'
     },
