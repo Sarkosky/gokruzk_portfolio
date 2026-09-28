@@ -1,4 +1,4 @@
-import type { LanguageTranslations } from './types';
+import type { LanguageTranslations } from "./types";
 
 export const spn: LanguageTranslations = {
   title: "NIGELL JAMA | Portafolio Técnico",
@@ -7,101 +7,176 @@ export const spn: LanguageTranslations = {
   nav_skills: "Habilidades",
   nav_contact: "Contacto",
   resume: "Currículum",
+  hero_greeting: "Hola, soy Nigell",
   hero_label: "Ingeniero Full-Stack",
   hero_title_1: "Construyendo ",
-  hero_title_highlight: "Herramientas Digitales",
-  hero_title_2: " Robustas",
-  hero_subtitle: "Comprometido con el aprendizaje continuo, la eficiencia en entornos de desarrollo modernos y la entrega de soluciones funcionales y bien estructuradas",
+  hero_title_highlight: "Herramientas",
+  hero_title_2: " Digitales Robustas",
+  hero_subtitle:
+    "Comprometido con el aprendizaje continuo, la eficiencia en entornos de desarrollo modernos y la entrega de soluciones funcionales y bien estructuradas",
   hero_btn_view_projects: "Ver Proyectos",
-  hero_btn_contact: "Ponte en Contacto",
+  hero_btn_contact: "Contáctame",
   skills_title: "Stack Tecnológico",
-  skills_subtitle: "Una cuidada selección de herramientas utilizadas para diseñar soluciones empresariales de alta disponibilidad.",
+  skills_subtitle:
+    "Una cuidada selección de herramientas utilizadas para diseñar soluciones empresariales de alta disponibilidad.",
   skills_categories: [
     {
       title: "Lenguajes",
-      items: ["Python", "TypeScript", "SQL"]
+      items: ["Python", "TypeScript", "SQL"],
     },
     {
       title: "Backend",
-      items: ["Django (DRF)", "FastAPI", "Prisma", "SQLAlchemy"]
+      items: ["Django (DRF)", "FastAPI", "Prisma", "SQLAlchemy"],
     },
     {
       title: "Frontend",
-      items: ["Next.js", "React", "Tailwind CSS"]
+      items: ["Next.js", "React", "Tailwind CSS"],
     },
     {
       title: "Bases de Datos",
-      items: ["PostgreSQL", "MSSQL", "MySQL", "MongoDB"]
+      items: ["PostgreSQL", "MSSQL", "MySQL", "MongoDB"],
     },
     {
       title: "Herramientas y Entorno",
-      items: ["Linux", "Docker", "Git", "Neovim", "JWT"]
+      items: ["Linux", "Docker", "Git", "Neovim", "JWT"],
     },
     {
       title: "Cloud",
-      items: ["Vercel", "AWS", "GCP", "Github", "Gitlab"]
-    }
+      items: ["Vercel", "AWS", "GCP", "Github", "Gitlab"],
+    },
   ],
   projects_title: "Proyectos Destacados",
   projects_view_code: "Ver Código",
   projects_demo: "Ver",
   projects_list: [
     {
-      category: 'Plataforma ConTech',
-      title: 'Payconer Centro de Construcción',
-      description: 'Una plataforma robusta de tecnología de construcción (ConTech) diseñada para optimizar los flujos de trabajo de proyectos y la gestión de recursos. Construida sobre un backend de Django de alta disponibilidad junto con un frontend moderno de Next.js para manejar operaciones de campo en tiempo real y métricas con seguridad de primer nivel.',
-      tags: ['Python', 'TypeScript', 'Django', 'Next.js', 'PostgreSQL', 'JWT', 'GitLab', 'Linux'],
-      image: '/payconer.png',
-      demoLink: 'https://www.payconer.com/'
+      category: "Plataforma ConTech",
+      title: "Payconer Centro de Construcción",
+      description:
+        "Una plataforma robusta de tecnología de construcción (ConTech) diseñada para optimizar los flujos de trabajo de proyectos y la gestión de recursos. Construida sobre un backend de Django de alta disponibilidad junto con un frontend moderno de Next.js para manejar operaciones de campo en tiempo real y métricas con seguridad de primer nivel.",
+      tags: [
+        "Python",
+        "TypeScript",
+        "Django",
+        "Next.js",
+        "PostgreSQL",
+        "JWT",
+        "GitLab",
+        "Linux",
+      ],
+      image: "/images/projects/payconer.png",
+      demoLink: "https://www.payconer.com/",
     },
     {
-      category: 'Operaciones Académicas',
-      title: 'Sistema de Inventario ESPOCH',
-      description: 'Un sistema seguro de gestión de inventarios diseñado y desarrollado desde cero para los departamentos universitarios de la ESPOCH. Cuenta con APIs REST de alto rendimiento, levantamiento riguroso de requerimientos con los stakeholders y bases de datos limpias para auditar eficientemente los activos institucionales.',
-      tags: ['Python', 'TypeScript', 'FastAPI', 'Next.js', 'Prisma' ,'PostgreSQL', 'JWT', 'GitHub'],
-      image: '/inventarioespoch.png',
-      demoLink: 'https://inventariosoftware.espoch.edu.ec/'
+      category: "Operaciones Académicas",
+      title: "Sistema de Inventario ESPOCH",
+      description:
+        "Un sistema seguro de gestión de inventarios diseñado y desarrollado desde cero para los departamentos universitarios de la ESPOCH. Cuenta con APIs REST de alto rendimiento, levantamiento riguroso de requerimientos con los stakeholders y bases de datos limpias para auditar eficientemente los activos institucionales.",
+      tags: [
+        "Python",
+        "TypeScript",
+        "FastAPI",
+        "Next.js",
+        "Prisma",
+        "PostgreSQL",
+        "JWT",
+        "GitHub",
+      ],
+      image: "/images/projects/inventarioespoch.png",
+      demoLink: "https://inventariosoftware.espoch.edu.ec/",
     },
     {
-      category: 'Desarrollo Full-Stack',
-      title: 'Aplicación de Gimnasio',
-      description: 'Diseñé y desarrollé una aplicación móvil full-stack para la planificación de entrenamientos y gestión de rutinas en gimnasios. Desarrollé el frontend reactivo en React Native junto con un backend de alto rendimiento en FastAPI y MySQL. Integré Amazon S3 para el almacenamiento de medios, implementé WebSockets para alertas en tiempo real entre usuarios y entrenadores, y gestioné notificaciones automatizadas por correo con GCP.',
-      tags: ['Python', 'TypeScript', 'React Native', 'FastAPI', 'Prisma' ,'MySQL', 'WebSockets', 'JWT', 'AWS', 'GCP'],
-      image: '/fitness.png'
+      category: "Desarrollo Full-Stack",
+      title: "Aplicación de Gimnasio",
+      description:
+        "Diseñé y desarrollé una aplicación móvil full-stack para la planificación de entrenamientos y gestión de rutinas en gimnasios. Desarrollé el frontend reactivo en React Native junto con un backend de alto rendimiento en FastAPI y MySQL. Integré Amazon S3 para el almacenamiento de medios, implementé WebSockets para alertas en tiempo real entre usuarios y entrenadores, y gestioné notificaciones automatizadas por correo con GCP.",
+      tags: [
+        "Python",
+        "TypeScript",
+        "React Native",
+        "FastAPI",
+        "Prisma",
+        "MySQL",
+        "WebSockets",
+        "JWT",
+        "AWS",
+        "GCP",
+      ],
+      image: "/images/projects/fitness.png",
     },
     {
-      category: 'Ingeniería Full-Stack',
-      title: 'Aplicación de Transmisión de Datos en Vivo',
-      description: 'Lideré el diseño e implementación de una aplicación multiplataforma de alto rendimiento y su backend utilizando FastAPI, Next.js y React Native. Diseñé una Arquitectura Hexagonal (Puertos y Adaptadores) para desacoplar la lógica de negocio, implementando WebSockets y Server-Sent Events (SSE) para el flujo bidireccional de datos entre dispositivos y el frontend. Apliqué patrones de diseño avanzados (Singleton, Factory, Repository) e integré GCP para autenticación segura.',
-      tags: ['Python', 'TypeScript', 'FastAPI', 'React Native', 'Next.js', 'WebSockets', 'Prisma', 'PostgreSQL' ,'JWT', 'GCP'],
-      image: '/device_backend.png'
+      category: "Ingeniería Full-Stack",
+      title: "Aplicación de Transmisión de Datos en Vivo",
+      description:
+        "Lideré el diseño e implementación de una aplicación multiplataforma de alto rendimiento y su backend utilizando FastAPI, Next.js y React Native. Diseñé una Arquitectura Hexagonal (Puertos y Adaptadores) para desacoplar la lógica de negocio, implementando WebSockets y Server-Sent Events (SSE) para el flujo bidireccional de datos entre dispositivos y el frontend. Apliqué patrones de diseño avanzados (Singleton, Factory, Repository) e integré GCP para autenticación segura.",
+      tags: [
+        "Python",
+        "TypeScript",
+        "FastAPI",
+        "React Native",
+        "Next.js",
+        "WebSockets",
+        "Prisma",
+        "PostgreSQL",
+        "JWT",
+        "GCP",
+      ],
+      image: "/images/projects/device_backend.png",
     },
     {
-      category: 'Desarrollo Backend',
-      title: 'Servicio de Gestión de Imágenes',
-      description: 'Desarrollé un backend de gestión de fotos diseñado con flexibilidad arquitectónica. Utilizando FastAPI, Alembic y Prisma dentro de una Arquitectura Hexagonal, el sistema desacopla la lógica de negocio permitiendo cambiar de ORM sin fricciones. Implementé OAuth2 para seguridad y utilicé uv para un desarrollo rápido y reproducible.',
-      tags: ['Python', 'FastAPI', 'Alembic', 'Prisma' ,'MySQL', 'PostgreSQL', 'JWT'],
-      image: '/photo_manager.png',
-      codeLink: 'https://github.com/Gokruzk/photo_manager'
+      category: "Desarrollo Backend",
+      title: "Servicio de Gestión de Imágenes",
+      description:
+        "Desarrollé un backend de gestión de fotos diseñado con flexibilidad arquitectónica. Utilizando FastAPI, Alembic y Prisma dentro de una Arquitectura Hexagonal, el sistema desacopla la lógica de negocio permitiendo cambiar de ORM sin fricciones. Implementé OAuth2 para seguridad y utilicé uv para un desarrollo rápido y reproducible.",
+      tags: [
+        "Python",
+        "FastAPI",
+        "Alembic",
+        "Prisma",
+        "MySQL",
+        "PostgreSQL",
+        "JWT",
+      ],
+      image: "/images/projects/photo_manager.png",
+      codeLink: "https://github.com/Gokruzk/photo_manager",
     },
     {
-      category: 'Ingeniería Full-Stack (NDA)',
-      title: 'Plataforma de Encuestas en Tiempo Real',
-      description: 'Diseño y desarrollo de una plataforma corporativa de encuestas colaborativas bajo acuerdo de confidencialidad. Implementé un backend de alta disponibilidad con Django Rest Framework y MySQL, utilizando Django Channels y WebSockets para la actualización e integración de datos en vivo con un frontend reactivo en Next.js. Diseñé también la estrategia de migraciones y semillas de datos, optimizando el tiempo de aprovisionamiento de entornos locales y staging.',
-      tags: ['Python', 'TypeScript', 'Django', 'Next.js', 'MySQL', 'WebSockets', 'JWT'],
-      image: '/survey_platform.png'
+      category: "Ingeniería Full-Stack (NDA)",
+      title: "Plataforma de Encuestas en Tiempo Real",
+      description:
+        "Diseño y desarrollo de una plataforma corporativa de encuestas colaborativas bajo acuerdo de confidencialidad. Implementé un backend de alta disponibilidad con Django Rest Framework y MySQL, utilizando Django Channels y WebSockets para la actualización e integración de datos en vivo con un frontend reactivo en Next.js. Diseñé también la estrategia de migraciones y semillas de datos, optimizando el tiempo de aprovisionamiento de entornos locales y staging.",
+      tags: [
+        "Python",
+        "TypeScript",
+        "Django",
+        "Next.js",
+        "MySQL",
+        "WebSockets",
+        "JWT",
+      ],
+      image: "/images/projects/survey_platform.png",
     },
     {
-      category: 'Desarrollo Full-Stack',
-      title: 'Plataforma de Reservas de Restaurante',
-      description: 'Diseñé y desarrolló una aplicación móvil y web full-stack para la gestión de reservas de restaurantes. Construí una API RESTful de alto rendimiento utilizando FastAPI y SQLAlchemy para la gestión de ORM, e integré acceso seguro mediante autenticación JWT. Desarrollé una interfaz frontend interactiva para gestionar operaciones CRUD eficientes de reservas y disponibilidad de mesas en tiempo real.',
-      tags: ['Python', 'TypeScript', 'FastAPI', 'Next.js', 'PostgreSQL', 'SQLAlchemy', 'JWT'],
-      image: '/comedor_app.png',
-      codeLink: 'https://github.com/Gokruzk/comedor_app/tree/refactor_backend'
-    }
+      category: "Desarrollo Full-Stack",
+      title: "Plataforma de Reservas de Restaurante",
+      description:
+        "Diseñé y desarrolló una aplicación móvil y web full-stack para la gestión de reservas de restaurantes. Construí una API RESTful de alto rendimiento utilizando FastAPI y SQLAlchemy para la gestión de ORM, e integré acceso seguro mediante autenticación JWT. Desarrollé una interfaz frontend interactiva para gestionar operaciones CRUD eficientes de reservas y disponibilidad de mesas en tiempo real.",
+      tags: [
+        "Python",
+        "TypeScript",
+        "FastAPI",
+        "Next.js",
+        "PostgreSQL",
+        "SQLAlchemy",
+        "JWT",
+      ],
+      image: "/images/projects/comedor_app.png",
+      codeLink: "https://github.com/Gokruzk/comedor_app/tree/refactor_backend",
+    },
   ],
   contact_title: "Iniciar Conexión",
-  contact_subtitle: "¿Listo para discutir tu próximo desafío técnico? Estoy disponible para consultoría estratégica y revisión de proyecto.",
+  contact_subtitle:
+    "¿Listo para discutir tu próximo desafío técnico? Estoy disponible para consultoría estratégica y revisión de proyecto.",
   contact_location: "Ecuador / Remoto",
-  footer_text: "Portafolio Técnico"
+  footer_text: "Portafolio Técnico",
 };

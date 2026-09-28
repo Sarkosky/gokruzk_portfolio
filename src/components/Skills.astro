@@ -1,25 +1,25 @@
 ---
-import { translations } from '../i18n/translations';
-import { getSvgPath } from '../utils/techIcons';
+import { translations } from "../i18n/translations";
+import { getSvgPath } from "../utils/techIcons";
 
 interface Props {
-  lang?: 'en' | 'es';
+  lang?: "en" | "es";
 }
 
-const { lang = 'en' } = Astro.props;
+const { lang = "en" } = Astro.props;
 const t = translations[lang];
 
 // Icon mapping for each skill category
 const categoryIcons: Record<string, string> = {
   // English keys
-  "Languages": "code",
-  "Backend": "dns",
-  "Frontend": "devices",
-  "Databases": "database",
+  Languages: "code",
+  Backend: "dns",
+  Frontend: "devices",
+  Databases: "database",
   "Tools & Environment": "terminal",
-  "Cloud": "cloud",
+  Cloud: "cloud",
   // Spanish keys
-  "Lenguajes": "code",
+  Lenguajes: "code",
   "Bases de Datos": "database",
   "Herramientas y Entorno": "terminal",
 };
@@ -33,42 +33,45 @@ const getIcon = (title: string) => {
   <div class="container">
     <div class="section-header">
       <h2 class="section-title">{t.skills_title}</h2>
-      <p class="section-subtitle">
-        {t.skills_subtitle}
-      </p>
     </div>
-    
+
     <div class="skills-grid">
-      {t.skills_categories.map(category => (
-        <div class="tech-card category-card">
-          <div class="category-header">
-            <span class="material-symbols-outlined category-icon">{getIcon(category.title)}</span>
-            <h3 class="category-title">{category.title}</h3>
+      {
+        t.skills_categories.map((category) => (
+          <div class="tech-card category-card">
+            <div class="category-header">
+              <span class="material-symbols-outlined category-icon">
+                {getIcon(category.title)}
+              </span>
+              <h3 class="category-title">{category.title}</h3>
+            </div>
+            <div class="skills-tags">
+              {category.items.map((item) => {
+                const svgPath = getSvgPath(item);
+                return (
+                  <span class="skill-tag" title={item}>
+                    {svgPath ? (
+                      <>
+                        <img
+                          src={svgPath}
+                          alt={item}
+                          class="tech-icon-img"
+                          onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"
+                        />
+                        <span class="tech-text" style="display: none;">
+                          {item}
+                        </span>
+                      </>
+                    ) : (
+                      <span class="tech-text">{item}</span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
           </div>
-          <div class="skills-tags">
-            {category.items.map(item => {
-              const svgPath = getSvgPath(item);
-              return (
-                <span class="skill-tag" title={item}>
-                  {svgPath ? (
-                    <>
-                      <img 
-                        src={svgPath} 
-                        alt={item} 
-                        class="tech-icon-img" 
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"
-                      />
-                      <span class="tech-text" style="display: none;">{item}</span>
-                    </>
-                  ) : (
-                    <span class="tech-text">{item}</span>
-                  )}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </section>
@@ -77,7 +80,6 @@ const getIcon = (title: string) => {
   .skills-section {
     padding: var(--section-gap) 0;
     background-color: var(--bg-primary);
-    border-bottom: 1px solid var(--border-color);
   }
 
   .section-header {
@@ -86,9 +88,13 @@ const getIcon = (title: string) => {
   }
 
   .section-title {
-    font-size: 2rem;
+    font-family: var(--font-script, "Kaushan Script", cursive);
+    font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+    color: var(--primary);
+    font-weight: 400;
     margin-bottom: var(--stack-sm);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
   }
 
   .section-subtitle {
@@ -118,15 +124,39 @@ const getIcon = (title: string) => {
     display: flex;
     flex-direction: column;
     gap: var(--stack-md);
-    padding: var(--stack-md) !important;
+    padding: 1.5rem !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--glass-shadow);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .category-card:hover {
+    background: var(--glass-bg-hover) !important;
+    border-color: var(--primary) !important;
+    transform: translateY(-6px) !important;
+    box-shadow:
+      0 16px 36px -6px rgba(0, 0, 0, 0.12),
+      0 0 20px -2px var(--primary-light);
+  }
+
+  :global(html.dark) .category-card:hover {
+    box-shadow:
+      0 18px 40px -6px rgba(0, 0, 0, 0.55),
+      0 0 24px -2px var(--glow-green, rgba(99, 232, 54, 0.2));
   }
 
   .category-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.85rem;
   }
 
   .category-icon {
@@ -138,36 +168,39 @@ const getIcon = (title: string) => {
     font-size: 1.125rem;
     font-weight: 600;
     color: var(--text-primary);
+    letter-spacing: -0.01em;
   }
 
   .skills-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.6rem;
   }
 
   .skill-tag {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
-    min-width: 3.25rem;
-    height: 3.25rem;
-    background-color: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
+    padding: 0.45rem;
+    min-width: 3.1rem;
+    height: 3.1rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
     box-sizing: border-box;
+    transition:
+      background-color var(--transition-fast),
+      border-color var(--transition-fast);
+  }
+
+  :global(html.dark) .skill-tag {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .tech-icon-img {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.1rem;
+    height: 2.1rem;
     object-fit: contain;
   }
-
-  .skill-tag:hover {
-    transform: translateY(-2px);
-  }
 </style>
-

@@ -1,13 +1,22 @@
 ---
-import { translations } from '../i18n/translations';
-import { getSvgPath } from '../utils/techIcons';
+import { translations } from "../i18n/translations";
+import { getSvgPath } from "../utils/techIcons";
 
 interface Props {
-  lang?: 'en' | 'es';
+  lang?: "en" | "es";
 }
 
-const { lang = 'en' } = Astro.props;
+const { lang = "en" } = Astro.props;
 const t = translations[lang];
+
+// Map projects to precompute tag icons for both cards and the modal
+const projectsWithIcons = t.projects_list.map((project) => ({
+  ...project,
+  tagsWithIcons: project.tags.map((tag) => ({
+    name: tag,
+    icon: getSvgPath(tag),
+  })),
+}));
 ---
 
 <section class="projects-section" id="projects">
@@ -16,277 +25,1098 @@ const t = translations[lang];
       <h2 class="section-title">{t.projects_title}</h2>
     </div>
 
-    <div class="projects-stack">
-      {t.projects_list.map((project, index) => (
-        <div class={`project-item ${index % 2 !== 0 ? 'reverse' : ''}`}>
-          <div 
-            class={`project-preview ${project.demoLink || project.codeLink ? 'clickable' : ''}`}
-            onclick={project.demoLink || project.codeLink ? `window.open('${project.demoLink || project.codeLink}', '_blank')` : undefined}
+    <!-- Grid of vertical Mac Folder Cards -->
+    <div class="projects-grid">
+      {
+        projectsWithIcons.map((project, index) => (
+          <article
+            class="mac-folder-card"
+            data-index={index}
+            role="button"
+            tabindex="0"
+            aria-label={`Open project details for ${project.title}`}
           >
-            <div class="browser-header">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
+            <!-- Folder Tab Header (macOS Folder Tab) -->
+            <div class="folder-tab-container">
+              <div class="folder-tab">
+                <div class="traffic-lights">
+                  <span class="dot dot-close" />
+                  <span class="dot dot-min" />
+                  <span class="dot dot-max" />
+                </div>
+                <span class="tab-category">{project.category}</span>
+              </div>
             </div>
-            <img src={project.image} alt={project.title} class="project-img" />
-          </div>
-          
-          <div class="project-details">
-            <span class="project-category">{project.category}</span>
-            <h3 class="project-item-title">{project.title}</h3>
-            <p class="project-description">{project.description}</p>
-            
-            <div class="project-tags">
-              {project.tags.map(tag => {
-                const svgPath = getSvgPath(tag);
-                return (
-                  <span class="tag" title={tag}>
-                    {svgPath ? (
-                      <>
-                        <img 
-                          src={svgPath} 
-                          alt={tag} 
-                          class="project-tag-icon"
-                          onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"
-                        />
-                        <span class="tech-text" style="display: none;">{tag}</span>
-                      </>
-                    ) : (
-                      <span class="tech-text">{tag}</span>
-                    )}
+
+            <!-- Folder Body -->
+            <div class="folder-body">
+              <!-- Document / Preview peek container -->
+              <div class="folder-doc-preview">
+                <div class="doc-header-strip">
+                  <div class="doc-lines">
+                    <span class="doc-line short" />
+                    <span class="doc-line" />
+                  </div>
+                  <span class="doc-type-badge">APP</span>
+                </div>
+                <div class="doc-img-wrapper">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    class="folder-img"
+                    loading="lazy"
+                  />
+                  <div class="doc-hover-overlay">
+                    <span class="doc-hover-badge">
+                      <span class="material-symbols-outlined">visibility</span>
+                      <span>{lang === "es" ? "Abrir Detalle" : "Quick Look"}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Folder Info -->
+              <div class="folder-info">
+                <div class="folder-title-row">
+                  <h3 class="folder-title">{project.title}</h3>
+                </div>
+
+                <!-- Bottom action prompt -->
+                <div class="folder-footer">
+                  <span class="folder-footer-text">
+                    {lang === "es" ? "Ver información" : "View details"}
                   </span>
-                );
-              })}
+                  <span class="material-symbols-outlined folder-footer-arrow">
+                    arrow_outward
+                  </span>
+                </div>
+              </div>
             </div>
-            
-            <div class="project-actions">
-              {project.codeLink &&  <a target="_blank" href={project.codeLink} class="action-link outline-action">
-                <span class="material-symbols-outlined action-icon">code</span>
-                <span>{t.projects_view_code}</span>
-              </a>}
-              {project.demoLink && <a target="_blank" href={project.demoLink} class="action-link primary-action">
-                <span class="material-symbols-outlined action-icon">open_in_new</span>
-                <span>{t.projects_demo}</span>
-              </a>}
-            </div>
-          </div>
-        </div>
-      ))}
+          </article>
+        ))
+      }
     </div>
   </div>
 </section>
 
+<!-- macOS Finder Quick Look Modal -->
+<div
+  id="mac-project-modal"
+  class="mac-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="true"
+  style="display: none;"
+>
+  <div class="mac-modal-backdrop" id="modal-backdrop"></div>
+
+  <div class="mac-modal-container">
+    <div class="mac-folder-modal-window" id="mac-window">
+      <!-- Mac Folder Modal Tab (Pestaña superior de carpeta Mac) -->
+      <div class="modal-folder-tab-bar">
+        <div class="modal-folder-tab">
+          <div class="traffic-lights modal-traffic">
+            <button
+              type="button"
+              class="dot dot-close interactive"
+              id="modal-traffic-close"
+              aria-label="Close"
+            >
+              <span class="close-x">✕</span>
+            </button>
+            <span class="dot dot-min"></span>
+            <span class="dot dot-max"></span>
+          </div>
+
+          <div class="window-title-badge">
+            <span class="material-symbols-outlined window-icon">folder_open</span>
+            <span id="modal-titlebar-title">Project Details</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mac Folder Modal Body (Cuerpo de la carpeta) -->
+      <div class="modal-folder-body">
+        <div class="modal-content-grid">
+          <!-- Media Column -->
+          <div class="modal-media-pane">
+            <div class="modal-image-wrapper">
+              <img id="modal-img" src="" alt="" class="modal-preview-img" />
+            </div>
+            <div class="modal-category-badge" id="modal-category">
+              Category
+            </div>
+          </div>
+
+          <!-- Description & Links Pane -->
+          <div class="modal-details-pane">
+            <h3 class="modal-heading" id="modal-title">Project Name</h3>
+
+            <div class="modal-desc-wrapper">
+              <h4 class="modal-subheading">
+                {lang === "es" ? "Sobre este proyecto" : "About this project"}
+              </h4>
+              <p class="modal-description" id="modal-description"></p>
+            </div>
+
+            <div class="modal-tags-section">
+              <h4 class="modal-subheading">
+                {lang === "es" ? "Tecnologías y herramientas" : "Stack & Technologies"}
+              </h4>
+              <div class="modal-tags-grid" id="modal-tags-list"></div>
+            </div>
+
+            <div class="modal-actions-bar">
+              <a
+                id="modal-code-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="modal-btn modal-btn-outline"
+              >
+                <span class="material-symbols-outlined">code</span>
+                <span>{t.projects_view_code}</span>
+              </a>
+              <button
+                type="button"
+                class="modal-btn modal-btn-ghost"
+                id="modal-btn-dismiss"
+              >
+                <span>{lang === "es" ? "Cerrar" : "Close"}</span>
+              </button>
+              <a
+                id="modal-demo-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="modal-btn modal-btn-primary"
+              >
+                <span>{lang === "es" ? "VISITAR" : "VISIT"}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Serialized projects data for GSAP client script -->
+<script type="application/json" id="mac-projects-data" set:html={JSON.stringify(projectsWithIcons)}></script>
+
+<script>
+  import { gsap } from "gsap";
+
+  const initProjects = () => {
+    const dataEl = document.getElementById("mac-projects-data");
+    if (!dataEl) return;
+
+    let projectsData: any[] = [];
+    try {
+      projectsData = JSON.parse(dataEl.textContent || "[]");
+    } catch (e) {
+      console.error("Error parsing projects data:", e);
+    }
+
+    const cards = document.querySelectorAll<HTMLElement>(".mac-folder-card");
+    const modal = document.getElementById("mac-project-modal");
+    const backdrop = document.getElementById("modal-backdrop");
+    const windowEl = document.getElementById("mac-window");
+    const closeTraffic = document.getElementById("modal-traffic-close");
+    const dismissBtn = document.getElementById("modal-btn-dismiss");
+
+    const modalTitlebar = document.getElementById("modal-titlebar-title");
+    const modalTitle = document.getElementById("modal-title");
+    const modalCategory = document.getElementById("modal-category");
+    const modalDesc = document.getElementById("modal-description");
+    const modalImg = document.getElementById("modal-img") as HTMLImageElement | null;
+    const modalTagsList = document.getElementById("modal-tags-list");
+    const modalDemo = document.getElementById("modal-demo-link") as HTMLAnchorElement | null;
+    const modalCode = document.getElementById("modal-code-link") as HTMLAnchorElement | null;
+
+    let isOpen = false;
+
+    // Entrance animation when section scrolls into view
+    const section = document.getElementById("projects");
+    if (section && cards.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              gsap.fromTo(
+                cards,
+                { opacity: 0, y: 35 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.65,
+                  stagger: 0.08,
+                  ease: "power2.out",
+                }
+              );
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(section);
+    }
+
+    // GSAP Card Hover animations
+    cards.forEach((card) => {
+      const doc = card.querySelector<HTMLElement>(".folder-doc-preview");
+      const arrow = card.querySelector<HTMLElement>(".folder-footer-arrow");
+
+      card.addEventListener("mouseenter", () => {
+        gsap.to(card, {
+          y: -8,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+        if (doc) {
+          gsap.to(doc, {
+            y: -5,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        }
+        if (arrow) {
+          gsap.to(arrow, {
+            x: 4,
+            y: -4,
+            duration: 0.25,
+            ease: "power1.out",
+          });
+        }
+      });
+
+      card.addEventListener("mouseleave", () => {
+        gsap.to(card, {
+          y: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+        if (doc) {
+          gsap.to(doc, {
+            y: 0,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        }
+        if (arrow) {
+          gsap.to(arrow, {
+            x: 0,
+            y: 0,
+            duration: 0.25,
+            ease: "power1.out",
+          });
+        }
+      });
+
+      const handleOpen = () => {
+        const indexStr = card.getAttribute("data-index");
+        const index = indexStr ? parseInt(indexStr, 10) : 0;
+        // Subtle click feedback with GSAP
+        gsap.to(card, {
+          scale: 0.97,
+          duration: 0.1,
+          yoyo: true,
+          repeat: 1,
+          onComplete: () => openModal(index),
+        });
+      };
+
+      card.addEventListener("click", handleOpen);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpen();
+        }
+      });
+    });
+
+    function openModal(index: number) {
+      const project = projectsData[index];
+      if (!project || !modal || !windowEl || !backdrop) return;
+
+      // Populate text
+      if (modalTitlebar) modalTitlebar.textContent = `Finder — ${project.title}`;
+      if (modalTitle) modalTitle.textContent = project.title;
+      if (modalCategory) modalCategory.textContent = project.category;
+      if (modalDesc) modalDesc.textContent = project.description;
+      if (modalImg) {
+        modalImg.src = project.image;
+        modalImg.alt = project.title;
+      }
+
+      // Populate tags
+      if (modalTagsList) {
+        modalTagsList.innerHTML = "";
+        (project.tagsWithIcons || []).forEach(
+          (t: { name: string; icon: string }) => {
+            const pill = document.createElement("div");
+            pill.className = "modal-tag-pill";
+            if (t.icon) {
+              pill.innerHTML = `
+                <img src="${t.icon}" alt="${t.name}" class="modal-tag-icon" onerror="this.style.display='none';" />
+                <span class="modal-tag-name">${t.name}</span>
+              `;
+            } else {
+              pill.innerHTML = `<span class="modal-tag-name">${t.name}</span>`;
+            }
+            modalTagsList.appendChild(pill);
+          }
+        );
+      }
+
+      // Action links
+      if (modalDemo) {
+        if (project.demoLink) {
+          modalDemo.href = project.demoLink;
+          modalDemo.style.display = "inline-flex";
+        } else {
+          modalDemo.style.display = "none";
+        }
+      }
+
+      if (modalCode) {
+        if (project.codeLink) {
+          modalCode.href = project.codeLink;
+          modalCode.style.display = "inline-flex";
+        } else {
+          modalCode.style.display = "none";
+        }
+      }
+
+      isOpen = true;
+      document.body.style.overflow = "hidden";
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+
+      // GSAP animate backdrop & window in
+      gsap.fromTo(
+        backdrop,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+
+      gsap.fromTo(
+        windowEl,
+        { opacity: 0, scale: 0.85, y: 30 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.38, ease: "back.out(1.5)" }
+      );
+    }
+
+    function closeModal() {
+      if (!isOpen || !modal || !windowEl || !backdrop) return;
+      isOpen = false;
+
+      // GSAP animate window & backdrop out
+      gsap.to(windowEl, {
+        opacity: 0,
+        scale: 0.9,
+        y: 18,
+        duration: 0.22,
+        ease: "power2.in",
+      });
+
+      gsap.to(backdrop, {
+        opacity: 0,
+        duration: 0.22,
+        ease: "power2.in",
+        onComplete: () => {
+          modal.style.display = "none";
+          modal.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        },
+      });
+    }
+
+    // Modal close event listeners
+    backdrop?.addEventListener("click", closeModal);
+    closeTraffic?.addEventListener("click", closeModal);
+    dismissBtn?.addEventListener("click", closeModal);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen) {
+        closeModal();
+      }
+    });
+  };
+
+  // Support initial page load and Astro view transitions if any
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initProjects);
+  } else {
+    initProjects();
+  }
+  document.addEventListener("astro:page-load", initProjects);
+</script>
+
 <style>
   .projects-section {
     padding: var(--section-gap) 0;
-    background-color: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    position: relative;
   }
 
   .section-header {
-    text-align: center;
+    text-align: left;
     max-width: 600px;
-    margin: 0 auto var(--stack-lg) auto;
+    margin-bottom: var(--stack-lg);
   }
 
   .section-title {
-    font-size: 2rem;
+    font-family: var(--font-script, "Kaushan Script", cursive);
+    font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+    color: var(--primary);
+    font-weight: 400;
     margin-bottom: var(--stack-sm);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
   }
 
-  .section-subtitle {
-    font-size: 1rem;
-    color: var(--text-secondary);
+  /* Grid of Mac Folder Cards */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
   }
 
-  .projects-stack {
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.25rem;
+    }
+  }
+
+  /* Mac Folder Card */
+  .mac-folder-card {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 5rem;
-  }
-
-  .project-item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--stack-md);
-    align-items: center;
-  }
-
-  .project-preview {
-    width: 100%;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    background-color: var(--bg-primary);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-  }
-
-  .project-preview:hover {
-    border-color: var(--primary);
-  }
-
-  .project-preview.clickable {
     cursor: pointer;
+    outline: none;
+    user-select: none;
+    transition: border-color var(--transition-normal);
   }
 
-  .project-preview.clickable:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* Folder Tab (Top portion of the folder) */
+  .folder-tab-container {
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+    margin-bottom: -1px;
   }
 
-  .browser-header {
+  .folder-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 1.15rem 0.45rem 0.85rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+    border: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-bg);
+    border-radius: 14px 14px 0 0;
+    position: relative;
+    max-width: 85%;
+    transition: border-color var(--transition-normal), background var(--transition-normal);
+  }
+
+  .traffic-lights {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 0.75rem 1rem;
-    background-color: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-color);
+    gap: 5px;
   }
 
   .dot {
     width: 8px;
     height: 8px;
-    border-radius: var(--radius-full);
-    background-color: #cbd5e1;
+    border-radius: 50%;
+    display: inline-block;
   }
 
-  .project-img {
+  .dot-close {
+    background-color: #ff5f56;
+    box-shadow: 0 0 4px rgba(255, 95, 86, 0.4);
+  }
+
+  .dot-min {
+    background-color: #ffbd2e;
+    box-shadow: 0 0 4px rgba(255, 189, 46, 0.4);
+  }
+
+  .dot-max {
+    background-color: #27c93f;
+    box-shadow: 0 0 4px rgba(39, 201, 63, 0.4);
+  }
+
+  .tab-category {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Folder Body */
+  .folder-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    padding: 1.25rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+    border: 1px solid var(--glass-border);
+    border-radius: 0 20px 20px 20px;
+    box-shadow: var(--glass-shadow);
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    box-sizing: border-box;
+    transition:
+      border-color var(--transition-normal),
+      box-shadow var(--transition-normal),
+      background var(--transition-normal);
+  }
+
+  /* Hover glow & border effect */
+  .mac-folder-card:hover .folder-tab,
+  .mac-folder-card:hover .folder-body {
+    border-color: var(--primary);
+  }
+
+  .mac-folder-card:hover .folder-body {
+    box-shadow:
+      0 18px 36px -8px rgba(0, 0, 0, 0.12),
+      0 0 22px -2px var(--primary-light);
+  }
+
+  :global(html.dark) .mac-folder-card:hover .folder-body {
+    box-shadow:
+      0 22px 42px -8px rgba(0, 0, 0, 0.6),
+      0 0 26px -2px var(--glow-green, rgba(99, 232, 54, 0.22));
+  }
+
+  /* Folder Document Preview (Peek effect) */
+  .folder-doc-preview {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: border-color var(--transition-fast);
+  }
+
+  .mac-folder-card:hover .folder-doc-preview {
+    border-color: var(--primary-border);
+  }
+
+  .doc-header-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.35rem 0.75rem;
+    background: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  :global(html.dark) .doc-header-strip {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .doc-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .doc-line {
+    width: 22px;
+    height: 2px;
+    background: var(--text-muted);
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+
+  .doc-line.short {
+    width: 12px;
+  }
+
+  .doc-type-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .doc-img-wrapper {
+    position: relative;
     width: 100%;
-    height: 250px;
-    object-cover: cover;
+    height: 165px;
+    overflow: hidden;
+    background: #000000;
+  }
+
+  .folder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     object-position: top;
     display: block;
-    filter: grayscale(20%);
-    transition: filter var(--transition-normal);
+    filter: brightness(0.96);
+    transition: filter 0.3s ease;
   }
 
-  .project-preview:hover .project-img {
-    filter: grayscale(0%);
+  .doc-hover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
   }
 
-  .project-details {
-    width: 100%;
+  .mac-folder-card:hover .doc-hover-overlay {
+    opacity: 1;
   }
 
-  .project-category {
+  .doc-hover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 9999px;
+    background: var(--primary);
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .doc-hover-badge .material-symbols-outlined {
+    font-size: 0.95rem;
+  }
+
+  /* Folder Info Area */
+  .folder-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .folder-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+
+  .folder-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  /* Folder Footer Action */
+  .folder-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--glass-border);
+    margin-top: 0.25rem;
+  }
+
+  .folder-footer-text {
     font-family: var(--font-mono);
     font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .folder-footer-arrow {
+    font-size: 1.1rem;
+    color: var(--primary);
+    transition: transform 0.25s ease;
+  }
+
+  /* =========================================
+     macOS Quick Look Modal Window
+     ========================================= */
+  .mac-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    box-sizing: border-box;
+  }
+
+  .mac-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .mac-modal-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+  }
+
+  .mac-folder-modal-window {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Folder Tab at the top of the modal */
+  .modal-folder-tab-bar {
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+    margin-bottom: -1px;
+  }
+
+  .modal-folder-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.65rem 1.4rem 0.65rem 1.15rem;
+    background: var(--bg-canvas);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--bg-canvas);
+    border-radius: 16px 16px 0 0;
+    position: relative;
+    max-width: 85%;
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  :global(html.dark) .modal-folder-tab {
+    background: rgba(18, 21, 26, 0.98);
+    border-color: rgba(255, 255, 255, 0.16);
+    border-bottom-color: rgba(18, 21, 26, 0.98);
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.45);
+  }
+
+  .modal-traffic {
+    gap: 7px;
+  }
+
+  .dot.interactive {
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform 0.15s ease;
+  }
+
+  .dot.interactive:hover {
+    transform: scale(1.18);
+  }
+
+  .close-x {
+    font-size: 7px;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.65);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .dot.interactive:hover .close-x {
+    opacity: 1;
+  }
+
+  .window-title-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .window-icon {
+    font-size: 1.1rem;
+    color: var(--primary);
+  }
+
+  /* Modal Folder Body */
+  .modal-folder-body {
+    background: var(--bg-canvas);
+    border: 1px solid var(--glass-border);
+    border-radius: 0 22px 22px 22px;
+    box-shadow:
+      0 25px 65px -10px rgba(0, 0, 0, 0.5),
+      0 0 35px -4px var(--primary-light);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: 1.75rem;
+    overflow-y: auto;
+    max-height: calc(88vh - 46px);
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+  }
+
+  :global(html.dark) .modal-folder-body {
+    background: rgba(18, 21, 26, 0.98);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+      0 30px 75px -10px rgba(0, 0, 0, 0.85),
+      0 0 35px -2px var(--glow-green, rgba(99, 232, 54, 0.25));
+  }
+
+  .modal-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .modal-content-grid {
+      grid-template-columns: 1fr 1.15fr;
+      gap: 2rem;
+      align-items: start;
+    }
+  }
+
+  .modal-media-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .modal-image-wrapper {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.2);
+    background: #000;
+  }
+
+  .modal-preview-img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+
+  .modal-category-badge {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
     font-weight: 600;
     color: var(--primary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    padding: 0.35rem 0.8rem;
+    background: var(--primary-light);
+    border: 1px solid var(--primary-border);
+    border-radius: 9999px;
+    width: fit-content;
   }
 
-  .project-item-title {
-    font-size: 1.5rem;
-    margin: var(--stack-sm) 0;
+  .modal-details-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
   }
 
-  .project-description {
-    font-size: 0.937rem;
+  .modal-heading {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  .modal-subheading {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--text-secondary);
-    margin-bottom: var(--stack-md);
-    line-height: 1.6;
+    margin: 0 0 0.45rem 0;
+  }
+
+  .modal-description {
+    font-size: 0.93rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
     text-align: justify;
   }
 
-  .project-tags {
+  .modal-tags-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--stack-sm);
-    margin-bottom: var(--stack-md);
+    gap: 0.5rem;
   }
 
-  .tag {
+  :global(.modal-tag-pill) {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+
+  :global(html.dark .modal-tag-pill) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.modal-tag-icon) {
+    width: 1.15rem;
+    height: 1.15rem;
+    object-fit: contain;
+  }
+
+  :global(.modal-tag-name) {
     font-family: var(--font-mono);
     font-size: 0.75rem;
-    padding: 0.35rem 0.6rem;
-    background-color: #ffffff;
-    color: var(--primary);
-    border: 1px solid var(--primary-border);
-    border-radius: var(--radius-full);
+    color: var(--text-primary);
     font-weight: 500;
-    min-height: 2rem;
-    box-sizing: border-box;
   }
 
-  .project-tag-icon {
-    width: 1.25rem;
-    height: 1.25rem;
-    object-fit: contain;
-    box-sizing: border-box;
-  }
-
-  .project-actions {
+  .modal-actions-bar {
     display: flex;
-    gap: var(--stack-sm);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.85rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 0.75rem;
   }
 
-  .action-link {
+  #modal-code-link {
+    margin-right: auto;
+  }
+
+  .modal-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-family: var(--font-mono);
     font-size: 0.812rem;
     font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
     transition: all var(--transition-fast);
   }
 
-  .primary-action {
-    background-color: var(--primary-light);
-    color: var(--primary);
-    border: 1px solid var(--primary-border);
+  .modal-btn-primary {
+    background-color: #15803d;
+    color: #ffffff !important;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: 1px solid #22c55e;
+    box-shadow: 0 2px 10px rgba(21, 128, 61, 0.35);
   }
 
-  .primary-action:hover {
-    background-color: var(--primary);
-    color: #ffffff;
-    border-color: var(--primary);
+  .modal-btn-primary:hover {
+    background-color: #166534;
+    border-color: #4ade80;
+    color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.45);
   }
 
-  .outline-action {
+  :global(html.dark) .modal-btn-primary {
+    background-color: #16a34a;
+    border-color: #22c55e;
+    color: #ffffff !important;
+    box-shadow: 0 3px 14px rgba(22, 163, 74, 0.4);
+  }
+
+  :global(html.dark) .modal-btn-primary:hover {
+    background-color: #15803d;
+    border-color: #4ade80;
+    box-shadow: 0 5px 20px rgba(34, 197, 94, 0.55);
+  }
+
+  .modal-btn-outline {
     background-color: transparent;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     border: 1px solid var(--border-color);
   }
 
-  .outline-action:hover {
+  .modal-btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .modal-btn-ghost {
+    background-color: rgba(0, 0, 0, 0.04);
     color: var(--text-primary);
-    border-color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    font-weight: 600;
   }
 
-  .action-icon {
-    font-size: 1rem;
+  .modal-btn-ghost:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    border-color: var(--text-secondary);
   }
 
-  @media (min-width: 768px) {
-    .project-item {
-      flex-direction: row;
-      gap: 3rem;
-    }
-    
-    .project-item.reverse {
-      flex-direction: row-reverse;
-    }
+  :global(html.dark) .modal-btn-ghost {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f1f5f9;
+  }
 
-    .project-preview {
-      width: 50%;
-    }
-
-    .project-details {
-      width: 50%;
-    }
-
-    .project-img {
-      height: 320px;
-    }
+  :global(html.dark) .modal-btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
   }
 </style>

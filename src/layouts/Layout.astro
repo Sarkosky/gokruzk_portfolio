@@ -1,29 +1,29 @@
 ---
-import '../styles/global.css';
+import "../styles/global.css";
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
-  lang?: 'en' | 'es';
+  lang?: "en" | "es";
 }
 
-const { 
-  title, 
-  description = "Nigell Jama - Software Engineer. Professional Full-Stack Developer Portfolio specializing in scalable systems, clean design, and technical precision.", 
+const {
+  title,
+  description = "Nigell Jama - Software Engineer. Professional Full-Stack Developer Portfolio specializing in scalable systems, clean design, and technical precision.",
   image,
-  lang = 'en' 
+  lang = "en",
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    
+
     <!-- Primary SEO Metadata -->
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -41,15 +41,31 @@ const {
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://gokruzk-portfolio.vercel.app" />
+    <meta
+      property="twitter:url"
+      content="https://gokruzk-portfolio.vercel.app"
+    />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     {image && <meta property="twitter:image" content={image} />}
-    
+
     <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+      rel="stylesheet"
+    />
 
     <style is:inline>
+      html,
+      body {
+        background-color: #08090a;
+      }
+      html.light,
+      html.light body {
+        background-color: #f4f5f7;
+      }
       /* Hide page body during scroll restoration to eliminate jumping/flickering */
       html.js-scroll-restoring body {
         visibility: hidden !important;
@@ -59,18 +75,20 @@ const {
       .global-loader {
         position: fixed;
         inset: 0;
-        background-color: #0b0f19; /* Default to dark navy color to prevent blinding flashes */
+        background-color: #08090a; /* Match new dark palette --bg-main to prevent blinding flashes */
         z-index: 99999;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: opacity 0.4s ease, visibility 0.4s;
+        transition:
+          opacity 0.4s ease,
+          visibility 0.4s;
         visibility: visible;
         opacity: 1;
       }
 
       html.light .global-loader {
-        background-color: #ffffff;
+        background-color: #f4f5f7;
       }
 
       .global-loader.fade-out {
@@ -84,7 +102,13 @@ const {
         flex-direction: column;
         align-items: center;
         gap: 1.25rem;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
       }
 
       .loader-logo {
@@ -94,15 +118,15 @@ const {
         justify-content: center;
         width: 70px;
         height: 70px;
-        background-color: rgba(34, 197, 94, 0.05);
-        border: 1px solid rgba(34, 197, 94, 0.2);
+        background-color: rgba(99, 232, 54, 0.08);
+        border: 1px solid rgba(99, 232, 54, 0.25);
         border-radius: 50%;
         animation: pulse-glow 2s infinite;
       }
 
       .loader-icon {
         font-size: 2.25rem !important;
-        color: #22c55e;
+        color: #63e836;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -111,8 +135,8 @@ const {
       .loader-spinner {
         width: 32px;
         height: 32px;
-        border: 2px solid rgba(34, 197, 94, 0.1);
-        border-top: 2px solid #22c55e;
+        border: 2px solid rgba(99, 232, 54, 0.15);
+        border-top: 2px solid #63e836;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
@@ -130,11 +154,14 @@ const {
       }
 
       @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       @keyframes pulse-glow {
-        0%, 100% {
+        0%,
+        100% {
           transform: scale(1);
           box-shadow: 0 0 0 rgba(34, 197, 94, 0);
         }
@@ -146,24 +173,30 @@ const {
     </style>
 
     <script is:inline>
-      if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('scrollPosition') !== null) {
-        document.documentElement.classList.add('js-scroll-restoring');
+      if (
+        typeof sessionStorage !== "undefined" &&
+        sessionStorage.getItem("scrollPosition") !== null
+      ) {
+        document.documentElement.classList.add("js-scroll-restoring");
       }
 
       const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
+        if (
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("theme")
+        ) {
+          return localStorage.getItem("theme");
         }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          return "dark";
         }
-        return 'light';
+        return "light";
       })();
-      
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
+
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
       } else {
-        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.remove("dark");
       }
     </script>
   </head>
@@ -176,40 +209,40 @@ const {
     </div>
 
     <slot />
-    
+
     <script>
       // Header scroll background modification using classes
-      const header = document.querySelector('header');
+      const header = document.querySelector("header");
       if (header) {
         const toggleScrolled = () => {
           if (window.scrollY > 50) {
-            header.classList.add('scrolled');
+            header.classList.add("scrolled");
           } else {
-            header.classList.remove('scrolled');
+            header.classList.remove("scrolled");
           }
         };
-        
+
         // Initial check on load
         toggleScrolled();
-        
+
         // Listen on scroll
-        window.addEventListener('scroll', toggleScrolled);
+        window.addEventListener("scroll", toggleScrolled);
       }
     </script>
 
     <script>
       // Global Page Loader Fade-Out Controller
       const hideLoader = () => {
-        const loader = document.getElementById('global-loader');
+        const loader = document.getElementById("global-loader");
         if (loader) {
-          loader.classList.add('fade-out');
+          loader.classList.add("fade-out");
         }
       };
 
-      if (document.readyState === 'complete') {
+      if (document.readyState === "complete") {
         hideLoader();
       } else {
-        window.addEventListener('load', hideLoader);
+        window.addEventListener("load", hideLoader);
         // Safety timeout to prevent infinite loader loop
         setTimeout(hideLoader, 2500);
       }

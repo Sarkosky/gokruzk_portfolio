@@ -1,23 +1,56 @@
 ---
-import { translations } from '../i18n/translations';
+import { translations } from "../i18n/translations";
 
 interface Props {
-  lang?: 'en' | 'es';
+  lang?: "en" | "es";
 }
 
-const { lang = 'en' } = Astro.props;
+const { lang = "en" } = Astro.props;
 const t = translations[lang];
 ---
-<section class="hero-section">
+
+<section class="hero-section" id="hero">
+  <!-- Luz verde ambiental superior derecha -->
+  <div class="hero-top-right-glow" aria-hidden="true"></div>
+
   <div class="container hero-container">
-    <p class="hero-label">{t.hero_label}</p>
-    <h1 class="hero-title">
-      {t.hero_title_1}<span class="highlight">{t.hero_title_highlight}</span>{t.hero_title_2}
-    </h1>
-    <p class="hero-subtitle">{t.hero_subtitle}</p>
-    <div class="hero-actions">
-      <a href="#projects" class="solid-btn">{t.hero_btn_view_projects}</a>
-      <a href="#contact" class="solid-btn-outline">{t.hero_btn_contact}</a>
+    <!-- Columna Izquierda (Desktop) / Superior (Móvil): Imagen de Perfil -->
+    <div class="hero-visual" id="hero-image-slot">
+      <div class="hero-image-wrapper">
+        <canvas
+          id="hero-particles-canvas"
+          class="hero-particles-canvas"
+          aria-hidden="true"></canvas>
+        <div class="hero-image-glow"></div>
+        <div class="hero-profile-container" id="hero-profile-container">
+          <img
+            src="/images/img/faceJama.png"
+            alt="Nigell Jama"
+            class="hero-profile-img"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha (Desktop) / Inferior (Móvil): Información -->
+    <div class="hero-content">
+      <p class="hero-greeting">{t.hero_greeting}</p>
+      <h1 class="hero-title">
+        <Fragment set:html={t.hero_title_1} />
+        <span class="highlight" set:html={t.hero_title_highlight} />
+        <Fragment set:html={t.hero_title_2} />
+      </h1>
+      <div class="hero-actions">
+        <a
+          href={lang === "es" ? "/es#contact" : "/#contact"}
+          class="hero-contact-btn"
+        >
+          <span>{t.hero_btn_contact}</span>
+          <span class="material-symbols-outlined hero-btn-arrow"
+            >arrow_forward</span
+          >
+        </a>
+      </div>
     </div>
   </div>
 </section>
@@ -25,79 +58,684 @@ const t = translations[lang];
 <style>
   .hero-section {
     position: relative;
-    padding: 8rem 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5.5rem 0 3rem 0;
+    margin-top: -4.5rem;
     background-color: var(--bg-primary);
     overflow: hidden;
-    border-bottom: 1px solid var(--border-color);
+    box-sizing: border-box;
   }
 
-  /* Structural blueprint-like layout grid using border lines */
-  .hero-section::before {
-    content: '';
+  /* Luz verde ambiental superior derecha */
+  .hero-top-right-glow {
     position: absolute;
-    inset: 0;
-    background-image: 
-      linear-gradient(var(--bg-secondary) 1px, transparent 1px),
-      linear-gradient(90deg, var(--bg-secondary) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.8;
+    top: -6%;
+    right: -6%;
+    width: clamp(260px, 32vw, 420px);
+    height: clamp(260px, 32vw, 420px);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      rgba(34, 197, 94, 0.28) 0%,
+      rgba(34, 197, 94, 0.12) 40%,
+      rgba(34, 197, 94, 0.03) 60%,
+      transparent 72%
+    );
+    filter: blur(55px);
+    opacity: 0.85;
     pointer-events: none;
     z-index: 1;
+    animation: top-right-pulse 7s ease-in-out infinite alternate;
+  }
+
+  :global(html.dark) .hero-top-right-glow {
+    background: radial-gradient(
+      circle at center,
+      rgba(99, 232, 54, 0.26) 0%,
+      rgba(99, 232, 54, 0.11) 40%,
+      rgba(99, 232, 54, 0.02) 60%,
+      transparent 72%
+    );
+    filter: blur(65px);
+    opacity: 0.9;
+  }
+
+  @keyframes top-right-pulse {
+    0% {
+      opacity: 0.7;
+      transform: scale(0.94) translate(0, 0);
+    }
+    100% {
+      opacity: 0.95;
+      transform: scale(1.08) translate(-15px, 15px);
+    }
   }
 
   .hero-container {
     position: relative;
     z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Columna Visual / Animación */
+  .hero-visual {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+  }
+
+  .hero-image-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-particles-canvas {
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    pointer-events: none;
+    z-index: 1; /* Detrás de la imagen */
+  }
+
+  .hero-image-glow {
+    position: absolute;
+    inset: 5%;
+    background: radial-gradient(circle, var(--glow-green) 0%, transparent 60%);
+    filter: blur(35px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse-glow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    0% {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 0.6;
+      transform: scale(1.05);
+    }
+  }
+
+  .hero-profile-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+  }
+
+  .hero-profile-img {
+    position: relative;
+    z-index: 2; /* Por delante de las partículas */
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    max-height: 70vh;
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4));
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  /* Columna Contenido / Información */
+  .hero-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    max-width: 800px;
+    width: 100%;
   }
 
-  .hero-label {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
+  .hero-greeting {
+    font-family: var(--font-script, "Kaushan Script", cursive);
+    font-size: clamp(2rem, 4vw, 3rem);
     color: var(--primary);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: var(--stack-sm);
-    font-weight: 500;
+    font-weight: 400;
+    letter-spacing: 0;
+    margin-bottom: -0.25rem; /* Ajustado para estar más cerca del párrafo siguiente */
   }
 
   .hero-title {
-    font-size: clamp(2.5rem, 5vw, 3.75rem);
-    font-weight: 800;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 300;
     color: var(--text-primary);
     line-height: 1.15;
-    margin-bottom: var(--stack-md);
+    margin-bottom: 2rem;
+    margin-top: 0;
     letter-spacing: -0.02em;
+    max-width: 100%;
   }
 
   .highlight {
     color: var(--primary);
   }
 
-  .hero-subtitle {
-    font-size: 1.125rem;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin-bottom: var(--stack-lg);
-    line-height: 1.7;
-  }
-
   .hero-actions {
     display: flex;
-    flex-direction: column;
-    gap: var(--stack-sm);
     width: 100%;
     justify-content: center;
+    margin-top: 1.5rem;
   }
 
-  @media (min-width: 480px) {
+  .hero-contact-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background-color: var(--primary);
+    color: var(--bg-primary, #111111);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.85rem 1.85rem;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+  }
+
+  .hero-contact-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+
+  .hero-btn-arrow {
+    font-size: 1.15rem;
+    transition: transform var(--transition-fast);
+  }
+
+  .hero-contact-btn:hover .hero-btn-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Desktop: 2 columnas (animación a la izquierda, información a la derecha) */
+  @media (min-width: 860px) {
+    .hero-container {
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+    }
+
+    .hero-visual {
+      min-height: 420px;
+      height: 100%;
+    }
+
+    .hero-image-wrapper {
+      max-width: 540px;
+    }
+
+    .hero-content {
+      align-items: flex-start;
+      text-align: left;
+    }
+
     .hero-actions {
-      flex-direction: row;
-      width: auto;
+      justify-content: flex-start;
+    }
+  }
+
+  /* Móviles */
+  @media (max-width: 767px) {
+    .hero-section {
+      padding-top: 5rem;
+      padding-bottom: 4.5rem;
+    }
+
+    .hero-image-wrapper {
+      max-width: 280px;
+    }
+
+    .hero-title {
+      max-width: 100%;
+      margin-bottom: 1.5rem;
     }
   }
 </style>
+
+<script>
+  import { gsap } from "gsap";
+
+  const initHeroIntro = () => {
+    // 1. Imagen se expande y hace un brinco para aparecer
+    const profileContainer = document.getElementById("hero-profile-container");
+    if (profileContainer) {
+      gsap.fromTo(
+        profileContainer,
+        { scale: 0.1, y: 75, opacity: 0 },
+        {
+          scale: 1,
+          y: 0,
+          opacity: 1,
+          duration: 1.05,
+          ease: "back.out(2.2)",
+          delay: 0.25,
+        },
+      );
+    }
+
+    // 2. Partículas y Canvas intro (fade in sin CSS scale para preservar 100% las coordenadas de mouse)
+    const canvas = document.getElementById("hero-particles-canvas");
+    if (canvas) {
+      gsap.fromTo(
+        canvas,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.85,
+          ease: "power2.out",
+          delay: 0.2,
+        },
+      );
+    }
+
+    const imageGlow = document.querySelector(".hero-image-glow");
+    if (imageGlow) {
+      gsap.fromTo(
+        imageGlow,
+        { opacity: 0, scale: 0 },
+        {
+          opacity: 0.45,
+          scale: 1,
+          duration: 0.95,
+          ease: "power2.out",
+          delay: 0.35,
+        },
+      );
+    }
+
+    // 3. Texto de la derecha (greeting, title, contact button)
+    const greeting = document.querySelector(".hero-greeting");
+    const title = document.querySelector(".hero-title");
+    const actions = document.querySelector(".hero-actions");
+
+    gsap.fromTo(
+      [greeting, title, actions],
+      { opacity: 0, x: 45, y: 15 },
+      {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        duration: 0.85,
+        stagger: 0.16,
+        ease: "power3.out",
+        delay: 0.38,
+      },
+    );
+
+    // 4. Luz verde ambiental superior derecha
+    const topRightGlow = document.querySelector(".hero-top-right-glow");
+    if (topRightGlow) {
+      gsap.fromTo(
+        topRightGlow,
+        { opacity: 0, scale: 0.4 },
+        {
+          opacity: 0.9,
+          scale: 1,
+          duration: 1.4,
+          ease: "power2.out",
+          delay: 0.1,
+        },
+      );
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHeroIntro);
+  } else {
+    initHeroIntro();
+  }
+  document.addEventListener("astro:page-load", initHeroIntro);
+
+  (function initHeroParticles() {
+    const canvas = document.getElementById(
+      "hero-particles-canvas",
+    ) as HTMLCanvasElement | null;
+    const visualSlot = document.getElementById("hero-image-slot");
+    if (!canvas || !visualSlot) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let animId = 0;
+
+    const mouse = {
+      x: -9999,
+      y: -9999,
+      isHovering: false,
+    };
+
+    class Particle {
+      baseX: number;
+      baseY: number;
+      targetX: number;
+      targetY: number;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      color: string;
+      alpha: number;
+      spring: number;
+      friction: number;
+      interactionRadius: number;
+      timeOffset: number;
+      floatSpeed: number;
+      floatAmpX: number;
+      floatAmpY: number;
+
+      constructor(w: number, h: number) {
+        this.baseX = 0;
+        this.baseY = 0;
+        this.targetX = 0;
+        this.targetY = 0;
+        this.x = 0;
+        this.y = 0;
+        this.vx = 0;
+        this.vy = 0;
+        this.radius = 0.4;
+        this.color = "#22c55e";
+        this.alpha = 0.7;
+        this.spring = 0.08;
+        this.friction = 0.78;
+        this.interactionRadius = 16;
+        this.timeOffset = 0;
+        this.floatSpeed = 0.0015;
+        this.floatAmpX = 6;
+        this.floatAmpY = 8;
+        this.reset(w, h);
+      }
+
+      reset(w: number, h: number, isIntro = false) {
+        const angle = Math.random() * Math.PI * 2;
+        // Distribuir en un halo amplio alrededor y detrás de la foto
+        const radiusX = Math.pow(Math.random(), 0.55) * (w * 0.52);
+        const radiusY = Math.pow(Math.random(), 0.55) * (h * 0.54);
+
+        this.baseX = w / 2 + Math.cos(angle) * radiusX;
+        this.baseY = h / 2 + Math.sin(angle) * radiusY;
+        this.targetX = this.baseX;
+        this.targetY = this.baseY;
+
+        if (isIntro) {
+          // Animación de intro: eclosionan desde el centro y se dispersan elásticamente
+          this.x = w / 2 + (Math.random() - 0.5) * 16;
+          this.y = h / 2 + (Math.random() - 0.5) * 16;
+          const burstSpeed = 8 + Math.random() * 18;
+          this.vx = Math.cos(angle) * burstSpeed;
+          this.vy = Math.sin(angle) * burstSpeed;
+        } else {
+          this.x = this.baseX;
+          this.y = this.baseY;
+          this.vx = 0;
+          this.vy = 0;
+        }
+
+        // Tamaño base ultra diminuto (micro-partículas sutiles)
+        this.radius = 0.8 + Math.random() * 0.8;
+        const palette = [
+          "#22c55e",
+          "#4ade80",
+          "#10b981",
+          "#86efac",
+          "#6ee7b7",
+          "#34d399",
+        ];
+        this.color = palette[Math.floor(Math.random() * palette.length)];
+        this.alpha = 0.35 + Math.random() * 0.55;
+
+        // Física elástica: retorno rápido y amortiguado al punto de origen
+        this.spring = 0.08 + Math.random() * 0.03;
+        this.friction = 0.78 + Math.random() * 0.04;
+        // Radio de interacción estrecho: SOLO cuando el cursor pasa directamente encima (16px)
+        this.interactionRadius = 16;
+
+        this.timeOffset = Math.random() * 1000;
+        this.floatSpeed = 0.0008 + Math.random() * 0.0012;
+        this.floatAmpX = 3 + Math.random() * 7;
+        this.floatAmpY = 4 + Math.random() * 8;
+      }
+
+      update(time: number) {
+        // Movimiento sutil flotante en reposo
+        const targetBaseX =
+          this.baseX +
+          Math.sin(time * this.floatSpeed + this.timeOffset) * this.floatAmpX;
+        const targetBaseY =
+          this.baseY +
+          Math.cos(time * this.floatSpeed * 1.15 + this.timeOffset) *
+            this.floatAmpY;
+
+        this.targetX = targetBaseX;
+        this.targetY = targetBaseY;
+
+        if (mouse.isHovering && mouse.x >= 0 && mouse.y >= 0) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const dist = Math.hypot(dx, dy);
+
+          // SOLO actúa si el cursor está directamente encima de la partícula
+          if (dist < this.interactionRadius && dist > 0.5) {
+            const force = Math.pow(1 - dist / this.interactionRadius, 1.8);
+            const pullSpeed = force * 4.2;
+            this.vx += (dx / dist) * pullSpeed;
+            this.vy += (dy / dist) * pullSpeed;
+          }
+        }
+
+        // Ley de Hooke: retorno elástico al punto base
+        const fx = (targetBaseX - this.x) * this.spring;
+        const fy = (targetBaseY - this.y) * this.spring;
+
+        this.vx = (this.vx + fx) * this.friction;
+        this.vy = (this.vy + fy) * this.friction;
+
+        this.x += this.vx;
+        this.y += this.vy;
+      }
+
+      draw(context: CanvasRenderingContext2D) {
+        const dx = this.x - this.targetX;
+        const dy = this.y - this.targetY;
+        const stretchDist = Math.hypot(dx, dy);
+        const speed = Math.hypot(this.vx, this.vy);
+
+        // Retornan exactamente a su tamaño más diminuto cuando están en reposo
+        const activeMovement = Math.max(0, speed - 0.08);
+        const activeStretch = Math.max(0, stretchDist - 0.3);
+        const elongation = Math.min(
+          2.3,
+          1 + activeMovement * 0.22 + activeStretch * 0.04,
+        );
+
+        context.save();
+        context.translate(this.x, this.y);
+
+        if (elongation > 1.06) {
+          // Orientar la partícula según la dirección de movimiento/tensión
+          const angle = Math.atan2(this.vy || dy, this.vx || dx);
+          context.rotate(angle);
+        }
+
+        context.fillStyle = this.color;
+        context.globalAlpha = this.alpha;
+        context.shadowColor = "#22c55e";
+        context.shadowBlur =
+          activeStretch > 0.6 ? Math.min(3, 0.5 + activeStretch * 0.1) : 0;
+
+        context.beginPath();
+        const rx = this.radius * elongation;
+        const ry = Math.max(0.18, this.radius / Math.sqrt(elongation));
+        context.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+        context.fill();
+
+        context.restore();
+      }
+    }
+
+    let particles: Particle[] = [];
+    const PARTICLE_COUNT = 220;
+
+    function resize() {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      width = rect.width;
+      height = rect.height;
+
+      if (width === 0 || height === 0) return;
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+
+      // setTransform garantiza escala DPR limpia sin acumulaciones de transformaciones
+      ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      if (particles.length === 0) {
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          const p = new Particle(width, height);
+          p.reset(width, height, true);
+          particles.push(p);
+        }
+      } else {
+        particles.forEach((p) => p.reset(width, height, false));
+      }
+    }
+
+    function updateMousePos(clientX: number, clientY: number) {
+      if (!canvas || width === 0 || height === 0) return;
+      const rect = canvas.getBoundingClientRect();
+
+      // Si el cursor está fuera de los límites visibles del canvas, desactivar interacción
+      if (
+        clientX < rect.left ||
+        clientX > rect.right ||
+        clientY < rect.top ||
+        clientY > rect.bottom ||
+        rect.width === 0 ||
+        rect.height === 0
+      ) {
+        mouse.isHovering = false;
+        mouse.x = -9999;
+        mouse.y = -9999;
+        return;
+      }
+
+      // Proyección matemática 1:1 entre coordenadas de pantalla y el lienzo del canvas
+      const scaleX = width / rect.width;
+      const scaleY = height / rect.height;
+      mouse.x = (clientX - rect.left) * scaleX;
+      mouse.y = (clientY - rect.top) * scaleY;
+      mouse.isHovering = true;
+    }
+
+    function onMouseMove(e: MouseEvent) {
+      updateMousePos(e.clientX, e.clientY);
+    }
+
+    function onMouseLeave() {
+      mouse.isHovering = false;
+      mouse.x = -9999;
+      mouse.y = -9999;
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        updateMousePos(touch.clientX, touch.clientY);
+      }
+    }
+
+    function onTouchEnd() {
+      onMouseLeave();
+    }
+
+    const heroSection = document.getElementById("hero") || visualSlot;
+    heroSection.addEventListener("mousemove", onMouseMove, { passive: true });
+    heroSection.addEventListener("mouseleave", onMouseLeave);
+    heroSection.addEventListener("touchstart", onTouchMove, { passive: true });
+    heroSection.addEventListener("touchmove", onTouchMove, { passive: true });
+    heroSection.addEventListener("touchend", onTouchEnd);
+
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+    });
+    resizeObserver.observe(visualSlot);
+    resizeObserver.observe(canvas);
+    window.addEventListener("resize", resize);
+
+    // Asegurar calibración si la imagen de perfil termina de cargar después
+    const profileImg = document.querySelector(
+      ".hero-profile-img",
+    ) as HTMLImageElement | null;
+    if (profileImg && !profileImg.complete) {
+      profileImg.addEventListener("load", resize);
+    }
+
+    let lastTime = 0;
+    function loop(time: number) {
+      if (!ctx || width === 0 || height === 0) {
+        animId = requestAnimationFrame(loop);
+        return;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Actualizar y dibujar cada partícula (sin líneas de conexión)
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update(time);
+        particles[i].draw(ctx);
+      }
+
+      animId = requestAnimationFrame(loop);
+    }
+
+    resize();
+    animId = requestAnimationFrame(loop);
+
+    // Cleanup when navigating away or hidden
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animId);
+      } else {
+        animId = requestAnimationFrame(loop);
+      }
+    });
+  })();
+</script>

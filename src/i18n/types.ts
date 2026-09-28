@@ -7,12 +7,13 @@ export interface LanguageTranslations {
   nav_contact: string;
   resume: string;
   // Hero
-  hero_label: string;
+  hero_greeting: string;
+  hero_label?: string;
   hero_title_1: string;
   hero_title_highlight: string;
   hero_title_2: string;
-  hero_subtitle: string;
-  hero_btn_view_projects: string;
+  hero_subtitle?: string;
+  hero_btn_view_projects?: string;
   hero_btn_contact: string;
   // Skills
   skills_title: string;
